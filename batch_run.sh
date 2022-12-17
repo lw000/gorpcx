@@ -1,0 +1,1 @@
+docker-compose up --scale zero_learn_v1=6 -d
