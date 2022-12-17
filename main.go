@@ -28,7 +28,7 @@ func (t *Arith) Mul(ctx context.Context, args Args, reply *Reply) error {
 }
 
 func runClient() {
-	d := client.NewPeer2PeerDiscovery("tcp@"+"localhost:8972", "")
+	d := client.NewPeer2PeerDiscovery("tcp@"+"localhost:8001", "")
 	c := client.NewXClient("Arith", client.Failtry, client.RandomSelect, d, client.DefaultOption)
 	defer func() {
 		_ = c.Close()
@@ -53,7 +53,7 @@ func runClient() {
 
 func addRegistryPlugin(s *server.Server) {
 	r := &serverplugin.EtcdRegisterPlugin{
-		ServiceAddress: "tcp@" + "localhost:8972",
+		ServiceAddress: "tcp@" + "127.0.0.1:8001",
 		EtcdServers:    []string{"127.0.0.1:2379"},
 		BasePath:       "/go-rpcx-server/",
 		Metrics:        metrics.NewRegistry(),
@@ -67,14 +67,17 @@ func addRegistryPlugin(s *server.Server) {
 }
 
 func main() {
-	time.AfterFunc(time.Second*2, func() {
-		runClient()
-	})
+	//time.AfterFunc(time.Second*2, func() {
+	//	runClient()
+	//})
+
 	s := server.NewServer()
-	//addRegistryPlugin(s)
-	// s.Register(new(Arith), "")
+	addRegistryPlugin(s)
+
+	//s.Register(new(Arith), "")
 	s.RegisterName("Arith", new(Arith), "")
-	err := s.Serve("tcp", ":8972")
+
+	err := s.Serve("tcp", ":8001")
 	if err != nil {
 		log.Panic(err)
 	}

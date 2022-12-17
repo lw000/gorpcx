@@ -1,0 +1,1 @@
+goctl docker -go main.go
